@@ -1,0 +1,144 @@
+package egovframework.sample.web;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.GenericXmlApplicationContext;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.Controller;
+
+import egovframework.sample.service.BooksService;
+import egovframework.sample.service.BooksVO;
+import egovframework.sample.service.LoaninfoService;
+import egovframework.sample.service.LoaninfoVO;
+import egovframework.sample.service.UsersService;
+import egovframework.sample.service.UsersVO;
+
+public class selectCheckboxController implements Controller {
+
+	@Override
+	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		
+		System.out.println("checked List 대출 & 반납 처리");
+		
+		boolean result = false;
+		
+		// 1. DB연동 처리
+		AbstractApplicationContext container = new GenericXmlApplicationContext(
+				"egovframework/spring/context-*.xml"
+				);
+
+		// 2. Spring 컨테이너로부터 LoaninfoProgramServiceImpl 객체를 lookup한다.
+		LoaninfoService loaninfoService = (LoaninfoService) container.getBean("loaninfoService");
+		UsersService usersService = (UsersService) container.getBean("usersService");
+		BooksService booksService = (BooksService) container.getBean("booksService");
+
+		ModelAndView mav = new ModelAndView();
+		
+		if (request.getParameter("opt1") != null && request.getParameter("opt2") == null) {
+			
+			System.out.println("도서 대출 정보에서 넘어온 경우");
+			
+			try {
+				String checkedList[] = request.getParameterValues("checkLoaninfo"); // checkbox 배열 형태 저장
+				String user = request.getParameterValues("checkUser")[0]; //
+				
+				for (String checked : checkedList) {
+					System.out.println(checked + "/" + user);
+					
+					LoaninfoVO lvo = new LoaninfoVO();
+					lvo.setId(checked);
+					lvo.setU_id(user); 
+					loaninfoService.updateLoaninfoIU(lvo);
+					
+					result = true;
+				}
+				
+				UsersVO uvo = new UsersVO();
+				uvo.setId(user);
+				uvo = usersService.selectUserI(uvo);
+				
+				mav.addObject("UsersVO", uvo);
+				mav.addObject("uid", uvo.getId());
+				
+			} catch(NullPointerException ne){
+				
+			}
+		}
+		else if (request.getParameter("opt1") == null && request.getParameter("opt2") != null) {
+			
+			System.out.println("책 정보에서 넘어온 경우");
+			
+			try {
+				
+				String checkedList[] = request.getParameterValues("checkBook"); // checkbox 배열 형태 저장
+				String user = request.getParameter("checkUser"); //
+				String loanBtn = request.getParameter("loan");
+				String returnBtn = request.getParameter("return");
+				String bookStatusList[] = request.getParameterValues("bookStatus"); // 책의 대출 & 반납 가능 상태
+				
+				// 대출 가능, 반납 가능한 도서가 동시에 넘어왔는지 & 대출인데 반납 & 반납인데 대출 
+				// 넘어왔다면, 오류메시지 출력해주기.
+				String checkedBtn = (loanBtn == null) ? returnBtn : loanBtn;
+				for (String bs : bookStatusList) {
+					
+					if(!bs.contains(checkedBtn))
+						throw new Exception();
+				}
+				
+				LoaninfoVO lvo = new LoaninfoVO();
+				
+				// 반납
+				if (loanBtn == null && returnBtn != null) {
+					
+					for(String checked : checkedList) {
+						
+						System.out.println(checked+", "+user);
+						
+						lvo.setU_id(user);
+						lvo.setB_id(Integer.parseInt(checked));
+						loaninfoService.updateLoaninfoUB(lvo);
+					}
+					
+				}
+				
+				// 대출
+				else if (loanBtn != null && returnBtn == null) {
+					for(String checked : checkedList) {
+						
+						System.out.println(checked+", "+user);
+						
+						BooksVO bvo = new BooksVO();
+						bvo.setId(Integer.parseInt(checked));
+						BooksVO rbvo = booksService.selectBook(bvo);
+						
+						lvo.setU_id(user);
+						lvo.setB_id(rbvo.getId());
+						lvo.setB_name(rbvo.getName());
+						lvo.setB_author(rbvo.getAuthor());
+						lvo.setB_publisher(rbvo.getPublisher());
+						lvo.setB_callnum(rbvo.getCallNum());
+
+						loaninfoService.insertLoaninfo(lvo);
+					}
+				}
+				
+				result = true;
+				
+				
+			} catch (Exception e) {
+				// 처리 실패
+				result = false;
+			}
+				
+		}
+
+		container.close();
+		mav.addObject("selectMain", result);
+		// mav.setViewName("loaninfo/selectLoaninfoList");
+		mav.setViewName("forward:/selectLoaninfoList.do");
+		return mav;
+	}
+
+}

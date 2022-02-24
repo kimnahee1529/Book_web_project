@@ -1,0 +1,9 @@
+
+select * from loaninfo;
+
+
+select * from users;
+
+select * from BOOKS;
+
+select * from ids;

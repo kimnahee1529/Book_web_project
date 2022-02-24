@@ -1,0 +1,78 @@
+package egovframework.sample.web;
+
+import java.io.PrintWriter;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.GenericXmlApplicationContext;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.Controller;
+
+import egovframework.sample.service.UsersService;
+import egovframework.sample.service.UsersVO;
+
+public class InsertUserController implements Controller {
+
+	@Override
+	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		
+		System.out.println("도서관 회원 등록 처리");
+		
+		AbstractApplicationContext container = new GenericXmlApplicationContext(
+				"egovframework/spring/context-*.xml"
+				);
+		UsersService usersService = (UsersService) container.getBean("usersService");
+		
+		//1. 사용자 입력 정보 추출
+		String name = request.getParameter("name");
+		String phoneNum = request.getParameter("phoneNum");
+		
+		UsersVO vo = new UsersVO();
+		
+		boolean result = false;
+		
+		// 들어온 어느 값 하나라도 공란일 경우
+		if(name.equals("") || phoneNum.equals("")) {
+			result = false;
+		} 
+		// 모두 입력됐을 경우
+		else {
+			
+			String correctNumber = "\\d{3}-\\d{4}-\\d{4}";
+
+			if (phoneNum.matches(correctNumber)) {
+				
+				vo.setName(name);
+				vo.setPhoneNum(phoneNum);
+				
+				UsersVO u = usersService.selectUser(vo);
+				
+				try {
+					if (name.equals(u.getName()) && phoneNum.equals(u.getPhoneNum())) {
+						System.out.println("이미 등록된 회원");
+						result = false;
+					}
+				} catch (Exception e) {
+					System.out.println("성공");
+					usersService.insertUser(vo);
+					result = true;
+				}
+			} else {
+				System.out.println("잘못 입력");
+			}
+			
+		}
+		
+		container.close();
+
+		// 3. 화면 네비게이션
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("result", result);
+		mav.setViewName("forward:WEB-INF/jsp/loaninfo/selectLoaninfoList.jsp");
+		return mav;
+		
+	}
+
+}

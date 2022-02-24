@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="Users">
+	<typeAlias alias="users" type="egovframework.sample.service.UsersVO"/>
+	
+	<resultMap class="users" id="usersResult">
+		<result property= "id" column ="ID"/>
+		<result property="name" column ="NAME"/>
+		<result property="phoneNum" column ="PHONENUM"/>
+		<result property="address" column ="ADDRESS"/>
+		<result property="info" column = "INFO"/>
+	</resultMap>
+	
+	<!-- (SELECT NVL(MAX(ID), 0)+1 FROM USERS) -->
+	<insert id="UsersDAO.insertUser">
+	INSERT INTO USERS (ID, NAME, PHONENUM, ADDRESS, INFO) VALUES (
+	 #id#,
+	 #name#,
+	 #phoneNum#,
+	 #address#,
+	 #info#)
+	</insert>
+	
+	<!-- 회원가입시 발동 -->
+	
+	<select id="UsersDAO.selectUser" resultMap="usersResult">
+	SELECT * FROM USERS
+	WHERE 
+	NAME = #name# AND
+	PHONENUM = #phoneNum#
+	</select>
+	
+	
+	<!-- where id -->
+	<select id="UsersDAO.selectUserI" resultMap="usersResult">
+	SELECT * FROM USERS
+	WHERE 
+	ID = #id#
+	</select>
+	
+	<!-- where name in *** -->
+	<select id="UsersDAO.selectUserList" resultMap="usersResult">
+	SELECT * FROM USERS
+	WHERE
+	
+	NAME LIKE '%' || #name# || '%'
+	
+	ORDER BY ID DESC
+	
+	</select>
+	
+	<select id="UsersDAO.selectUserListTotCnt" resultClass="int">
+
+			SELECT COUNT(*) totcnt
+			FROM USERS
+			WHERE 1=1
+			
+			<!-- 
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+				ID LIKE '%' || #searchKeyword# || '%'
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				NAME LIKE '%' || #searchKeyword# || '%'
+			</isEqual>
+			-->
+	</select>
+	
+	
+	<!--  
+				SELECT
+				ID, NAME, DESCRIPTION, USE_YN, REG_USER
+			FROM SAMPLE
+			WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+				ID LIKE '%' || #searchKeyword# || '%'
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				NAME LIKE '%' || #searchKeyword# || '%'
+			</isEqual>
+			ORDER BY ID DESC
+			LIMIT #recordCountPerPage# OFFSET #firstIndex#	
+	-->	
+	
+	
+</sqlMap>

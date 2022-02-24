@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+
+<!-- HandlerMapping 등록 -->
+<bean id="HandlerMapping"
+	class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+	
+	<property name="mappings">
+		<props>
+			<prop key="/selectLoaninfoList.do">selectLoaninfoList</prop>
+			<!-- <prop key="/insertUser.do">insertUser</prop>-->
+			<prop key="/selectMain.do">selectMain</prop>
+			<prop key="/selectUserList.do">selectUserList</prop>
+			<prop key="/selectUser.do">selectUser</prop>
+			<prop key="/selectCheckBox.do">selectCheckBox</prop>
+			<prop key="/showReturnInfo.do">showReturnInfo</prop>
+		</props>
+	</property>
+	
+</bean>
+
+<!-- Controller 등록 -->
+<bean id="selectLoaninfoList"
+	class="egovframework.sample.web.LoaninfoListController"></bean>
+<!--
+<bean id="insertUser"
+	class="egovframework.sample.web.InsertUserController"></bean>
+-->
+<bean id="selectMain"
+	class="egovframework.sample.web.selectMainController"></bean>
+<bean id="selectUserList"
+	class="egovframework.sample.web.selectUserListController"></bean>
+<bean id="selectUser"
+	class="egovframework.sample.web.selectUserController"></bean>
+<bean id="selectCheckBox"
+	class="egovframework.sample.web.selectCheckboxController"></bean>
+<bean id="showReturnInfo"
+	class="egovframework.sample.web.showReturnInfoController"></bean>
+	
+
+<context:component-scan base-package="egovframework">
+	<context:include-filter type="annotation"
+		expression="org.springframework.stereotype.Controller"/>
+	<context:include-filter type="annotation"
+		expression="org.springframework.stereotype.Service"/>
+	<context:include-filter type="annotation"
+		expression="org.springframework.stereotype.Repository"/>
+</context:component-scan>
+
+<!-- ViewResolver 등록 -->
+<bean id="viewResolver"
+	class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	<property name="prefix" value="WEB-INF/jsp/"></property>	
+	<property name="suffix" value=".jsp"></property>	
+</bean>
+
+
+</beans>
+

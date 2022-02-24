@@ -1,0 +1,45 @@
+package egovframework.sample.service.impl;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
+import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
+import egovframework.rte.fdl.idgnr.EgovIdGnrService;
+import egovframework.sample.service.BooksDAO;
+import egovframework.sample.service.BooksService;
+import egovframework.sample.service.BooksVO;
+import egovframework.sample.service.LoaninfoDAO;
+
+@Service("booksService")
+public class BooksServiceImpl extends EgovAbstractServiceImpl implements BooksService {
+	
+	
+	@Resource(name="daoBooks")
+	private BooksDAO booksDAO;
+	
+	@Resource(name="egovIdGnrService_B")
+	private EgovIdGnrService egovIdGnrService;
+
+	
+	@Override
+	public BooksVO selectBook(BooksVO vo) throws Exception {
+		return booksDAO.selectBook(vo);
+	}
+
+
+	@Override
+	public List<BooksVO> selectBooksList_LikeName(BooksVO vo) throws Exception {
+		return booksDAO.selectBooksList_LikeName(vo);
+	}
+
+
+	@Override
+	public void insertBook(BooksVO vo) throws Exception {
+		booksDAO.insertBook(vo);
+		
+	}
+
+}

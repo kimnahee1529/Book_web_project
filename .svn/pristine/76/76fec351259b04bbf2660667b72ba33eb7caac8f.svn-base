@@ -1,0 +1,40 @@
+package egovframework.sample.service;
+
+import java.util.List;
+
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.GenericXmlApplicationContext;
+
+public class LoaninfoServiceClient {
+	public static void main(String[] args) throws Exception {
+//		// 1. Spring 컨테이너를 구동한다.
+//		AbstractApplicationContext container = new GenericXmlApplicationContext(
+//				"egovframework/spring/context-*.xml"
+//				);
+//		
+//		// 2. Spring 컨테이너로부터 LoaninfoProgramServiceImpl 객체를 lookup한다.
+//		LoaninfoService loaninfoService = (LoaninfoService) container.getBean("loaninfoService");
+//		LoaninfoVO vo = new LoaninfoVO();
+//		
+//		vo.setB_id("B00001");
+//		
+//		// loaninfoService.insertLoaninfo(vo);
+//		
+////		List<LoaninfoVO> loaninfoList = loaninfoService.selectLoaninfoList(vo);
+////		System.out.println("[Loaninfo List]");
+////		for (LoaninfoVO loaninfo : loaninfoList) {
+////			System.out.println("====> " + loaninfo.toString());
+////		}
+//		
+//		
+//		
+//		// 3. Spring 컨테이너를 종료한다.
+//		container.close();
+//		
+//		
+//		
+//		
+	}
+//	
+
+}
